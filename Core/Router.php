@@ -1,10 +1,10 @@
 <?php
- namespace Core;
+namespace Core;
 
 /**
  * Class Router
  */
- 
+
 class Router
 {
     /**
@@ -19,7 +19,7 @@ class Router
      * @var array
      */
     protected $params = [];
-    
+
     /**
      * Add a route to the routing table
      *
@@ -44,7 +44,7 @@ class Router
 
         $this->routes[$route] = $params;
     }
-    
+
     /**
      * Get all the routes from the routing table
      *
@@ -84,29 +84,33 @@ class Router
      *
      * @return array
      */
-    public function getParams():array
+    public function getParams(): array
     {
         return $this->params;
     }
 
     /**
      * Dispatch the route, creating the controller object and running the
-     * action method
+     * action method. In order to trigger the call of the magic method __call
+     * we will attach an "@Action" suffix on each existing actions, e.g. posts/index, posts/12/show
      *
      * @param string $url The route URL
      * @return void
      */
     public function dispatch(string $url): void
     {
+        $url = $this->removeQueryStringVariables($url);
+
         if ($this->match($url)) {
             $controller = $this->params['controller'];
             $controller = $this->convertToStudlyCaps($controller);
             $controller = "App\Controllers\\$controller";
 
             if (class_exists($controller)) {
-                $controller_object = new $controller();
-
-                $action = $this->params['action'];
+                $controller_object = new $controller($this->params);
+                // We will add '@Action' suffix to the method/action name so
+                // that the magic method __call will be triggered
+                $action = $this->params['action'].'@Action';
                 $action = $this->convertToCamelCase($action);
 
                 if (is_callable([$controller_object, $action])) {
@@ -144,5 +148,46 @@ class Router
     protected function convertToCamelCase(string $string): string
     {
         return lcfirst($this->convertToStudlyCaps($string));
+    }
+
+    /**
+     * Remove the query string variables from the URL (if any). As the full
+     * query string is used for the route, any variables at the end will need
+     * to be removed before the route is matched to the routing table. For
+     * example:
+     *
+     *   URL                           $_SERVER['QUERY_STRING']  Route
+     *   -------------------------------------------------------------------
+     *   localhost                     ''                        ''
+     *   localhost/?                   ''                        ''
+     *   localhost/?page=1             page=1                    ''
+     *   localhost/posts?page=1        posts&page=1              posts
+     *   localhost/posts/index         posts/index               posts/index
+     *   localhost/posts/index?page=1  posts/index&page=1        posts/index
+     *
+     * A URL of the format localhost/?page (one variable name, no value) won't
+     * work however. (NB. The .htaccess file converts the first ? to a & when
+     * it's passed through to the $_SERVER variable).
+     *
+     * @param string $url The full URL
+     *
+     * @return string The URL with the query string variables removed
+     */
+    protected function removeQueryStringVariables($url)
+    {
+        if ($url != '') {
+            // explode splits url in 2 parts. Second part is the query string
+            // .htaccess file converts the first ? to a & when it's passed
+            // through to the $_SERVER variable
+            $parts = explode('&', $url, 2);
+
+            if (strpos($parts[0], '=') === false) {
+                $url = $parts[0];
+            } else {
+                $url = '';
+            }
+        }
+
+        return $url;
     }
 }

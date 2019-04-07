@@ -6,15 +6,36 @@ namespace App\Controllers;
  * Home controller
  */
 
- class Home
+ class Home extends \Core\Controller
  {
+     /**
+     * Before filter
+     *
+     * @return void
+     */
+     protected function before():void
+     {
+         echo "(before) ";
+         //  return false;
+     }
+
+     /**
+      * After filter
+      *
+      * @return void
+      */
+     protected function after(): void
+     {
+         echo " (after)";
+     }
+
      /**
       * Show the index page
       *
       * @return void
       */
-     public function index():void
+     public function index(): void
      {
-         echo 'Hello from the index action in the Home Controller';
+         echo 'Hello from the index action in the Home controller!';
      }
  }
