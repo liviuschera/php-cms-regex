@@ -2,6 +2,8 @@
 
 namespace App\Controllers;
 
+use \Core\View;
+
 /**
  * Posts controller
  *
@@ -18,7 +20,7 @@ namespace App\Controllers;
      */
      public function index(): void
      {
-         echo 'Hello from the index action in the Posts controller!';
+         View::renderTemplate('Posts/index.html.twig');
      }
 
      /**
