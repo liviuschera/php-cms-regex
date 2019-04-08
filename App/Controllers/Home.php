@@ -2,6 +2,8 @@
 
 namespace App\Controllers;
 
+use \Core\View;
+
 /**
  * Home controller
  */
@@ -36,6 +38,10 @@ namespace App\Controllers;
       */
      public function index(): void
      {
-         echo 'Hello from the index action in the Home controller!';
+         //  echo 'Hello from the index action in the Home controller!';
+         View::render('Home/index.php', [
+            'name'    => 'Dave',
+            'colours' => ['red', 'green', 'blue']
+        ]);
      }
  }

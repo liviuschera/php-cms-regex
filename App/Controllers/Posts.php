@@ -42,4 +42,25 @@ namespace App\Controllers;
          echo '<p>Route parameters: <pre>' .
              htmlspecialchars(print_r($this->route_params, true)) . '</pre></p>';
      }
+
+     /**
+     * Before filter
+     *
+     * @return void
+     */
+     protected function before():void
+     {
+         echo "(before) ";
+         //  return false;
+     }
+
+     /**
+      * After filter
+      *
+      * @return void
+      */
+     protected function after(): void
+     {
+         echo " (after)";
+     }
  }

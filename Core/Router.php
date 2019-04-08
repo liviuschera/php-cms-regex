@@ -104,11 +104,12 @@ class Router
         if ($this->match($url)) {
             $controller = $this->params['controller'];
             $controller = $this->convertToStudlyCaps($controller);
-            $controller = "App\Controllers\\$controller";
+            // $controller = "App\Controllers\\$controller";
+            $controller = $this->getNamespace() . $controller;
 
             if (class_exists($controller)) {
                 $controller_object = new $controller($this->params);
-                // We will add '@Action' suffix to the method/action name so
+                // Add '@Action' suffix to the method/action name so
                 // that the magic method __call will be triggered
                 $action = $this->params['action'].'@Action';
                 $action = $this->convertToCamelCase($action);
@@ -189,5 +190,22 @@ class Router
         }
 
         return $url;
+    }
+
+    /**
+     * Get the namespace for the controller class. The namespace defined in the
+     * route parameters is added if present.
+     *
+     * @return string The request URL
+     */
+    protected function getNamespace(): string
+    {
+        $namespace = 'App\Controllers\\';
+
+        if (array_key_exists('namespace', $this->params)) {
+            $namespace .= $this->params['namespace'] . '\\';
+        }
+
+        return $namespace;
     }
 }
