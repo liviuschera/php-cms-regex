@@ -1,4 +1,5 @@
 <?php
+use Core\Error;
 
 /**
  * Front controller
@@ -7,20 +8,16 @@
  */
 
 /**
- * Twig
+ * Auto loader
  */
 require_once dirname(__DIR__) . '/vendor/autoload.php';
 
- /**
-  * Auto loader
-  */
-// spl_autoload_register(function ($class) {
-//     $root = dirname(__DIR__); // get the parent directory
-//     $file = $root . '/' . str_replace('\\', '/', $class) . '.php';
-//     if (is_readable($file)) {
-//         require $root . '/' . str_replace('\\', '/', $class) . '.php';
-//     }
-// });
+/**
+ * Error and Exception handling
+ */
+error_reporting(E_ALL);
+// set_error_handler('Core\Error::errorHandler');
+set_exception_handler('Core\Error::exceptionHandler');
 
 $router = new Core\Router();
 
