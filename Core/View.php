@@ -6,7 +6,7 @@ namespace Core;
  */
 class View
 {
-   
+
     /**
      * Render a view file
      *
@@ -36,13 +36,14 @@ class View
      *
      * @return void
      */
-    public static function renderTemplate(string $template, array $args = []):void
+    public static function renderTemplate(string $template, array $args = []): void
     {
         static $twig = null;
 
         if ($twig === null) {
             $loader = new \Twig_Loader_Filesystem(dirname(__DIR__) . '\App\Views');
             $twig = new \Twig_Environment($loader);
+            $twig->addGlobal("session", $_SESSION);
         }
 
         echo $twig->render($template, $args);
